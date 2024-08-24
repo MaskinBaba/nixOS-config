@@ -1,0 +1,55 @@
+{ config, pkgs, lib, ... }:
+{
+  environment.systemPackages = with pkgs; [
+    vim 
+    wget
+    foot
+    zsh
+    zsh-completions
+    zsh-autosuggestions
+    pciutils
+    pkgs.discord
+    pkgs.lshw
+    pkgs.onlyoffice-bin
+    pkgs.nvtopPackages.full
+    pkgs.htop
+    pkgs.neofetch
+    pkgs.pywal
+    wineWowPackages.staging
+    winetricks
+    wineWowPackages.waylandFull
+    pkgs.gparted
+    auto-cpufreq
+    pkgs.brave
+    pkgs.heroic
+    pkgs.lutris
+    pkgs.libreoffice-qt6-fresh
+    gimp
+    pkgs.protontricks
+    pkgs.waybar
+    pkgs.dunst
+    libnotify
+    rofi-wayland
+    pulseaudio
+    pkgs.pcmanfm
+    pkgs.networkmanagerapplet
+    pkgs.playerctl
+#    pkgs.acpilight 
+    pkgs.swww
+    pkgs.polkit
+    lxqt.lxqt-policykit
+    pkgs.lemurs
+    pkgs.pavucontrol
+    pkgs.grim
+    pkgs.slurp
+    pkgs.killall
+    pkgs.obs-studio
+    pkgs.xorg.xhost
+    pkgs.hyprlock
+    pkgs.hypridle
+    pkgs.lxappearance
+    pkgs.chromium
+    pkgs.fzf
+    pkgs.wl-clipboard
+  ];
+}
