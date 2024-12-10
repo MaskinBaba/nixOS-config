@@ -11,6 +11,9 @@
       ls = "ls --color=auto";
       s = "systemctl";
       ssh = "footssh";
+      clrbootentries = "sudo /run/current-system/bin/switch-to-configuration switch";
+      nix-install = ''nix profile install'';
+      vim = "nvim";
     };
 
     history = {

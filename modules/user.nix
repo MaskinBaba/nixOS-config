@@ -17,7 +17,7 @@ in
       isNormalUser = true;
       initialPassword = "12345";
       description = "Main user";
-      extraGroups = [ "networkmanager" "wheel" "video" ];
+      extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" ];
       packages = with pkgs; [
       #  thunderbird
       ];

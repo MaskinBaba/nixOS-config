@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 {
   environment.systemPackages = with pkgs; [
     vim 
@@ -8,48 +8,80 @@
     zsh-completions
     zsh-autosuggestions
     pciutils
-    pkgs.discord
-    pkgs.lshw
-    pkgs.onlyoffice-bin
-    pkgs.nvtopPackages.full
-    pkgs.htop
-    pkgs.neofetch
-    pkgs.pywal
+    discord
+    lshw
+    onlyoffice-bin
+    nvtopPackages.full
+    htop
+    neofetch
+    pywal
     wineWowPackages.staging
     winetricks
     wineWowPackages.waylandFull
-    pkgs.gparted
+    gparted
     auto-cpufreq
-    pkgs.brave
-    pkgs.heroic
-    pkgs.lutris
-    pkgs.libreoffice-qt6-fresh
+    brave
+    heroic
+    lutris
+    libreoffice-qt6-fresh
     gimp
-    pkgs.protontricks
-    pkgs.waybar
-    pkgs.dunst
+    protontricks
+    waybar
+    dunst
     libnotify
     rofi-wayland
+    wofi
     pulseaudio
-    pkgs.pcmanfm
-    pkgs.networkmanagerapplet
-    pkgs.playerctl
-#    pkgs.acpilight 
-    pkgs.swww
-    pkgs.polkit
+    pcmanfm
+    networkmanagerapplet
+    playerctl
+    swww
+    polkit
     lxqt.lxqt-policykit
-    pkgs.lemurs
-    pkgs.pavucontrol
-    pkgs.grim
-    pkgs.slurp
-    pkgs.killall
-    pkgs.obs-studio
-    pkgs.xorg.xhost
-    pkgs.hyprlock
-    pkgs.hypridle
-    pkgs.lxappearance
-    pkgs.chromium
-    pkgs.fzf
-    pkgs.wl-clipboard
+    lemurs
+    pavucontrol
+    grim
+    slurp
+    killall
+    obs-studio
+    xorg.xhost
+    hyprlock
+    hypridle
+    lxappearance
+    chromium
+    fzf
+    wl-clipboard
+    git
+    xdg-desktop-portal-hyprland
+    mangohud
+    goverlay
+    kdePackages.kdeconnect-kde
+    mpv
+    mpvScripts.mpris
+#    inputs.nixpkgs-unstable.packages.x86_64.tree
+    # inputs.nixpkgs-unstable.packages."${pkgs.system}".ani-cli
+    inputs.helix.packages."${pkgs.system}".helix
+    btop
+    sxiv
+    zathura
+    thunderbird
+    vscodium
+    neovim
+    android-tools
+    android-studio
+    # davinci-resolve
+    krita
+    inkscape
+    libsForQt5.kdenlive
+    ncmpcpp
+    mpc-cli
+    mpd
+    ags
+    jdk
+    python3Full
+    # kicad
+    fuzzel
+    nwg-look
+    shadps4
   ];
 }

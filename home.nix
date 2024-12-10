@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./home-manager/zsh.nix
+  ];
+
   home.username = "maskin";
   home.homeDirectory = "/home/maskin";
 
@@ -12,12 +16,12 @@
 
     # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
 
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
+    (pkgs.writeShellScriptBin "lutris-dgpu" ''
+      nvidia-offload lutris
+    '')
+    (pkgs.writeShellScriptBin "steam-dgpu" ''
+      nvidia-offload steam
+    '')
   ];
 
   home.file = {
@@ -50,7 +54,7 @@
   #  /etc/profiles/per-user/maskin/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "vim";
+    EDITOR = "nvim";
   };
 
   #programs.ags = {
@@ -67,48 +71,6 @@
   #  ];
   #};
 
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-    defaultKeymap = "viins";
-    # dotDir = "~/.config/zsh";
-
-    shellAliases = {
-      ls = "ls --color=auto";
-      s = "systemctl";
-      ssh = "footssh";
-    };
-
-    history = {
-      size = 10000;
-      path = "${config.xdg.cacheHome}/zsh/history";
-    };
-
-    completionInit = "
-      zstyle ':completion:*' list-colors ''
-      zstyle ':completion:*' menu select
-    ";
-
-    initExtra = ''
-      PROMPT="%F{4}[%f%n@%m%F{4}]%f%(?..%F{9}✖ )%f%F{1}%~%f %# "
-      (cat ~/.cache/wal/sequences &)
-      fcd() {
-        cd "$(find -type d | fzf)"
-      }
-      open () {
-        xdg-open "$(find -type f | fzf)"
-      }
-      footssh() {
-        if [[ $TERM = "foot" ]]; then
-          TERM=linux ssh $@
-        else
-          ssh $@
-        fi
-      }
-    '';
-  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
