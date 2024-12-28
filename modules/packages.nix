@@ -1,6 +1,6 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, pkgs-unstable, lib, inputs, ... }:
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = (with pkgs; [
     vim 
     wget
     foot
@@ -58,8 +58,6 @@
     kdePackages.kdeconnect-kde
     mpv
     mpvScripts.mpris
-#    inputs.nixpkgs-unstable.packages.x86_64.tree
-    # inputs.nixpkgs-unstable.packages."${pkgs.system}".ani-cli
     inputs.helix.packages."${pkgs.system}".helix
     btop
     sxiv
@@ -83,5 +81,18 @@
     fuzzel
     nwg-look
     shadps4
-  ];
+    eza
+    nixd
+    ntfs3g
+    keepassxc
+    # networkmanager
+    libsixel
+  ]) 
+  
+  ++ 
+  
+  (with pkgs-unstable; [
+    matlab
+    home-manager
+  ]);
 }

@@ -8,7 +8,8 @@
     # dotDir = "~/.config/zsh";
 
     shellAliases = {
-      ls = "ls --color=auto";
+      # ls = "ls --color=auto";
+      ls = "eza --icons=always";
       s = "systemctl";
       ssh = "footssh";
       clrbootentries = "sudo /run/current-system/bin/switch-to-configuration switch";

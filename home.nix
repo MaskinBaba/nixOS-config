@@ -22,6 +22,9 @@
     (pkgs.writeShellScriptBin "steam-dgpu" ''
       nvidia-offload steam
     '')
+    (pkgs.writeShellScriptBin "pavufix" ''
+      GSK_RENDERER=ngl pavucontrol
+    '')
   ];
 
   home.file = {
@@ -55,22 +58,8 @@
   #
   home.sessionVariables = {
     EDITOR = "nvim";
+    # SHELL = "zsh";
   };
-
-  #programs.ags = {
-  #  enable = true;
-
-  #  # null or path, leave as null if you don't want hm to manage the config
-  #  configDir = ../ags;
-
-  #  # additional packages to add to gjs's runtime
-  #  extraPackages = with pkgs; [
-  #    gtksourceview
-  #    webkitgtk
-  #    accountsservice
-  #  ];
-  #};
-
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

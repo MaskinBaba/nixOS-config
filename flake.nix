@@ -1,7 +1,7 @@
 {
   description = "Flake for NixOS build.";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs: 
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs: 
   let
     lib = nixpkgs.lib;
     # pkgs = nixpkgs.legacyPackages.${system};
@@ -11,7 +11,16 @@
         allowUnfree = true;
       };
     };
-    pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+    pkgs-unstable = import nixpkgs-unstable{
+      inherit system;
+      config = {
+        allowUnfree = true;
+      };
+      overlays = [
+        inputs.nix-matlab.overlay
+      ];
+    };
+    # pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
     
     # System Settings
     system = "x86_64-linux";
@@ -20,15 +29,19 @@
     server = "hades";
     timezone = "Asia/Kolkata";
     profile = "personal";
-    locale = "en_US.UTF-8";
+    locale = "en_IN";
+    localeUS = "en_US.UTF-8";
     
     #User Settings
     userSettings = {
       username = "maskin";
       name = "Hemanshu";
+      email = "hemanshu@maskinscache.xyz";
       editor = "nvim";
       term = "foot";
       browser = "firefox";
+      dots = "~/.dotfiles";
+      wm = "hyprland";
     };
   in
   {
@@ -38,6 +51,8 @@
         inherit inputs;
         inherit pkgs;
         inherit pkgs-unstable;
+        inherit timezone;
+        inherit locale;
       };
 
       modules = [ 
@@ -47,6 +62,15 @@
       ];
     };
 
+    homeConfigurations = {
+      maskin = home-manager.lib.homeManagerConfiguration{
+        pkgs = pkgs-unstable;
+        # inherit system;
+        modules = [
+          ./home.nix
+        ];
+      };
+    };
   };
   
   inputs = {
@@ -72,6 +96,11 @@
     helix = {
       url = "github:helix-editor/helix/master";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-matlab = {
+      url = "gitlab:doronbehar/nix-matlab";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 }
