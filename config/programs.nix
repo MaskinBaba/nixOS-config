@@ -8,6 +8,12 @@
   
     # Install zsh
     zsh.enable = true;
+
+    # Enables appimage support
+    appimage = {
+      enable = true;
+      binfmt = true;
+    };
   
     hyprland = {
       enable = true;

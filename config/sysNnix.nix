@@ -43,9 +43,16 @@
     rtkit.enable = true;
   };
 
-  environment.sessionVariables = {
-    NIXOS_OZON_WL = "1";
-    WLR_NO_HARDWARE_CURSORS = "1";
+  environment = {
+    sessionVariables = {
+      NIXOS_OZON_WL = "1";
+      WLR_NO_HARDWARE_CURSORS = "1";
+    };
+
+    plasma6.excludePackages = with pkgs.kdePackages; [
+      konsole
+    ];
+
   };
 
   xdg.portal = {
@@ -58,6 +65,7 @@
     gc = {
       automatic = true;
       options = "--delete-older-than 15d";
+      randomizedDelaySec = "20min";
     };
     nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   };
@@ -127,14 +135,13 @@
       enable = true;
       # Load nvidia driver for X11 and Wayland
       videoDrivers = ["nvidia"];
-      #displayManager.gdm.enable = true;
-      #desktopManager.gnome.enable = true;
-      # displayManager.sddm.enable = true;
-      desktopManager.plasma5.enable = true;
       xkb.layout = "us";
       xkb.variant = "";
     };
+
+    desktopManager.plasma6.enable = true;
     displayManager.sddm.enable = true;
+    displayManager.sddm.wayland.enable = true;
 
     power-profiles-daemon.enable = false;
     tlp = {
@@ -207,6 +214,15 @@
       # network.listenAddress = "any"; # if you want to allow non-localhost connections
       # network.startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
     };
+
+    ollama = {
+      enable = true;
+      acceleration = "cuda";
+      # Optional: load models on startup
+      # loadModels = [ ... ];
+    };
+
+    # acpid.
   };
 
   # This value determines the NixOS release from which the default

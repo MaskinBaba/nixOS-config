@@ -19,10 +19,9 @@
     winetricks
     wineWowPackages.waylandFull
     gparted
-    auto-cpufreq
     brave
     heroic
-    lutris
+    # lutris
     libreoffice-qt6-fresh
     gimp
     protontricks
@@ -58,7 +57,7 @@
     kdePackages.kdeconnect-kde
     mpv
     mpvScripts.mpris
-    inputs.helix.packages."${pkgs.system}".helix
+    # inputs.helix.packages."${pkgs.system}".helix
     btop
     sxiv
     zathura
@@ -77,22 +76,29 @@
     ags
     jdk
     python3Full
-    # kicad
     fuzzel
     nwg-look
-    shadps4
     eza
     nixd
     ntfs3g
     keepassxc
     # networkmanager
     libsixel
+    ryujinx
+    bottles
+    scrcpy
+    rpi-imager
+    kicad
+    vlc
+    pywal
+    vivaldi
+    gammastep
   ]) 
   
   ++ 
   
   (with pkgs-unstable; [
-    matlab
     home-manager
+    lutris
   ]);
 }

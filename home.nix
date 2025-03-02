@@ -22,6 +22,9 @@
     (pkgs.writeShellScriptBin "steam-dgpu" ''
       nvidia-offload steam
     '')
+    (pkgs.writeShellScriptBin "heroic-dgpu" ''
+      nvidia-offload heroic
+    '')
     (pkgs.writeShellScriptBin "pavufix" ''
       GSK_RENDERER=ngl pavucontrol
     '')

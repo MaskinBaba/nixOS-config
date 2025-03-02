@@ -8,13 +8,14 @@
     # dotDir = "~/.config/zsh";
 
     shellAliases = {
-      # ls = "ls --color=auto";
+      # oldls = "ls --color=auto";
       ls = "eza --icons=always";
       s = "systemctl";
       ssh = "footssh";
       clrbootentries = "sudo /run/current-system/bin/switch-to-configuration switch";
       nix-install = ''nix profile install'';
       vim = "nvim";
+      showimg = "img2sixel -I -w 1200";
     };
 
     history = {

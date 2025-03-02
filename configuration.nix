@@ -17,7 +17,7 @@
     enable = true;
     userName = "maskin";
     description = "Maskin";
-    extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" "dialout" ];
   };
   # virtualisation.docker.enable = true;
 
@@ -26,10 +26,14 @@
     setSocketVariable = true;
   };
  
-  fonts.packages = with pkgs; [
-    # nerd-fonts.iosevka
-    nerdfonts
-    font-awesome
-    google-fonts
-  ];
+  fonts = {
+    fontDir.enable = true;
+    fontconfig.useEmbeddedBitmaps = true;
+    packages = with pkgs; [
+      # nerd-fonts.iosevka
+      nerdfonts
+      font-awesome
+      google-fonts
+    ];
+  };
 }

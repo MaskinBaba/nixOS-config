@@ -15,18 +15,23 @@
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/312be28f-a13c-4d6e-8a61-8b07233c0c85";
+      label = "Root Partition";
       fsType = "ext4";
+      noCheck = true;
     };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/28BE-1BF0";
+      label = "EFI Parition";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
   fileSystems."/home" =
     { device = "/dev/disk/by-uuid/65540710-8c60-4c47-9210-4f9f10d37028";
+      label = "Home Partition";
       fsType = "ext4";
+      noCheck = true;
     };
 
   swapDevices = [ ];
