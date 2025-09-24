@@ -1,11 +1,22 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, pkgs-unstable, lib, inputs, ... }:
 {
   # Bootloader.
   boot = {
     loader = {
-      systemd-boot.enable = true;
+      systemd-boot ={ 
+        enable = true;
+	extraEntries = {
+          "archLinux.conf" = ''
+	    title Arch Linux
+	    efi /efi/EFI/grub_efi/grubx64.efi
+	    sort_key q_arch
+	  '';
+	};
+      };
       efi.canTouchEfiVariables = true;
     };
+    kernelParams = [ "loglevel=3" "tsc=unstable" "trace_clock=local" ];
+    blacklistedKernelModules = [ "i8042" ];
     #extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
     #kernelModules = [ "wl" ];
     #initrd.kernelModules = [ "wl" ];
@@ -36,11 +47,37 @@
       NetworkManager-wait-online.enable = false;
       mpd.serviceConfig.SupplementaryGroups = [ "pipewire" ];
     };
+
+    extraConfig = ''
+      DefaultTimeoutStopSec=10s
+    '';
   };
 
   security = {
     polkit.enable = true;
     rtkit.enable = true;
+
+    tpm2.enable = false;
+
+    # pam.services = {
+    #   sddm.enableKwallet = true;
+    #   login.kwallet = { 
+    #     enable = true; 
+    #     # package = kdePackages.kwallet-pam; 
+    #   }; 
+    #   kde = { 
+    #     allowNullPassword = true; 
+    #       kwallet = { 
+    #       enable = true; 
+    #       # package = kdePackages.kwallet-pam;
+    #     }; 
+    #   };
+    #   kde-fingerprint = lib.mkIf config.services.fprintd.enable { fprintAuth = true; }; 
+    #   kde-smartcard = lib.mkIf config.security.pam.p11.enable { p11Auth = true; };
+    # };
+    pam.services = {
+      sddm.enableGnomeKeyring = true;
+    };
   };
 
   environment = {
@@ -61,7 +98,10 @@
   };
 
   nix = {
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      auto-optimise-store = true;
+    };
     gc = {
       automatic = true;
       options = "--delete-older-than 15d";
@@ -71,14 +111,22 @@
   };
 
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    # permittedInsecurePackages = [
+    #   "electron-33.4.11"
+    # ];
+  };
+
+  nixpkgs.config.permittedInsecurePackages = [
+                "electron-33.4.11"
+              ];
 
   
 
   hardware = {
     #enableRedistributableFirmware = true;
 
-    pulseaudio.enable = false;
 
     # Graphics thing
     # opengl = {
@@ -91,6 +139,8 @@
       modesetting.enable = true;
       powerManagement.enable = true;
       powerManagement.finegrained = true;
+      dynamicBoost.enable = true;
+
       open = false;
       nvidiaSettings = true;
 
@@ -122,12 +172,48 @@
   powerManagement.enable = true;
 
   services = {
+
+    pulseaudio.enable = false;
+    # logind.extraConfig = ''
+    #   HandlePowerKey=ignore
+    # '';
+    logind.powerKey = "ignore";
+
+    mopidy = let
+      mopidyPackagesOverride = pkgs.mopidyPackages.overrideScope (prev: final: {
+        extraPkgs = pkgs: [ pkgs.yt-dlp ];
+      });
+    in {
+      enable = true;
+      extensionPackages = (with pkgs; [
+        mopidy-youtube
+	mopidy-ytmusic
+	mopidy-mpd
+	mopidy-moped
+	mopidy-mopify
+	mopidy-notify
+	mopidy-spotify
+	mopidy-subidy
+      ]);
+      configuration = ''
+        [youtube]
+	youtube_dl_package = yt_dlp
+      '';
+    };
+
+    gnome.gnome-keyring.enable = true;
 #     logind.lidSwitch = "ignore";
-    openssh.enable = true;
+    # openssh.enable = false;
 
 #    udev.extraRules = ''
-#      ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video $sys$devpath/brightness", RUN+="/bin/chmod g+w $sys$devpath/brightness"
+#      action=="add", subsystem=="backlight", run+="/bin/chgrp video $sys$devpath/brightness", run+="/bin/chmod g+w $sys$devpath/brightness"
 #    '';
+    udev.extraRules = ''
+      KERNEL=="hidraw*", ATTRS{idVendor}=="3554", MODE="0666"
+    '';
+    # udev.extraRules = ''
+    #   SUBSYSTEMS=="usb", ATTRS{idVendor}=="3554", MODE=="0660", TAG+="uaccess"
+    # '';
 
     blueman.enable = true;
 
@@ -216,7 +302,7 @@
     };
 
     ollama = {
-      enable = true;
+      enable = false;
       acceleration = "cuda";
       # Optional: load models on startup
       # loadModels = [ ... ];

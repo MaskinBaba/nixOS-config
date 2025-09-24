@@ -9,12 +9,18 @@
       inherit system;
       config = {
         allowUnfree = true;
+	permittedInsecurePackages = [
+          "electron-33.4.11"
+        ];
       };
     };
     pkgs-unstable = import nixpkgs-unstable{
       inherit system;
       config = {
         allowUnfree = true;
+	permittedInsecurePackages = [
+          "electron-33.4.11"
+        ];
       };
       overlays = [
         inputs.nix-matlab.overlay
@@ -66,6 +72,8 @@
       maskin = home-manager.lib.homeManagerConfiguration{
         pkgs = pkgs-unstable;
         # inherit system;
+        extraSpecialArgs = { inherit inputs; };
+
         modules = [
           ./home.nix
         ];
@@ -74,7 +82,7 @@
   };
   
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
@@ -89,8 +97,13 @@
     };
 
     ags = {
-      url = "github:Aylur/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:aylur/ags";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    astal = {
+      url = "github:aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     helix = {

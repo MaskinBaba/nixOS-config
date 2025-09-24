@@ -28,7 +28,7 @@
       zstyle ':completion:*' menu select
     ";
 
-    initExtra = ''
+    initContent = ''
       PROMPT="%F{4}[%f%n@%m%F{4}]%f%(?..%F{9}✖ )%f%F{1}%~%f %# "
       (cat ~/.cache/wal/sequences &)
       fcd() {

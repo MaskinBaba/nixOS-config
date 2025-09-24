@@ -1,6 +1,8 @@
 { config, pkgs, inputs, ...}: 
 {
   programs = {
+    virt-manager.enable = true;
+
     light.enable = true;
 
     # Install firefox.
@@ -31,6 +33,8 @@
       enable = true;
       package = with pkgs; steam.override { extraPkgs = pkgs: [ attr ]; };
     };
+
+    dconf.enable = true;
 
     nix-ld = {
       enable = true;

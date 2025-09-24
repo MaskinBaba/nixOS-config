@@ -10,31 +10,46 @@
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ "kvm-amd" "amdgpu" ];
   boot.extraModulePackages = [ ];
+  boot.kernelParams = [ "quier" "loglevel=3" ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/312be28f-a13c-4d6e-8a61-8b07233c0c85";
-      label = "Root Partition";
+    { # device = "/dev/disk/by-uuid/312be28f-a13c-4d6e-8a61-8b07233c0c85";
+      device = "/dev/disk/by-partuuid/df51f787-4ac7-4d1d-8c68-7d213286727f" ;
+      # label = "Root Partition";
       fsType = "ext4";
       noCheck = true;
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/28BE-1BF0";
-      label = "EFI Parition";
+    { # device = "/dev/disk/by-uuid/28BE-1BF0";
+      device = "/dev/disk/by-partuuid/514a97e5-542e-4e8e-a11a-185e58dde80a" ;
+      # label = "EFI Parition";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/65540710-8c60-4c47-9210-4f9f10d37028";
-      label = "Home Partition";
+    { # device = "/dev/disk/by-uuid/65540710-8c60-4c47-9210-4f9f10d37028";
+      device = "/dev/disk/by-partuuid/cbbb21dd-bcd3-4e0b-b1b2-bc221bdf3271" ;
+      # label = "Home Partition";
       fsType = "ext4";
-      noCheck = true;
+      noCheck = false;
     };
+  
+  # fileSystems."/run/media/arch" =
+  #   { # device = "/dev/disk/by-uuid/65540710-8c60-4c47-9210-4f9f10d37028";
+  #     device = "/dev/disk/by-partuuid/31256741-ebd0-4f85-ad4f-05ad86446e40" ;
+  #     # label = "Arch's Home Dir";
+  #     fsType = "ext4";
+  #     noCheck = false;
+  #   };
 
-  swapDevices = [ ];
+  swapDevices = [ {
+    device = "/dev/disk/by-partuuid/63de9b1b-d3db-444e-bc1e-46b4f34d920a" ;
+    randomEncryption.enable = true;
+  } ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

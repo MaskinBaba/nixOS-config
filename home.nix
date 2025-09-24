@@ -1,8 +1,10 @@
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, pkgs-unstable, ... }:
 
 {
   imports = [
+    inputs.ags.homeManagerModules.default
     ./home-manager/zsh.nix
+    # ./home-manager/ags.nix
   ];
 
   home.username = "maskin";
@@ -13,6 +15,7 @@
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
+    inputs.astal.packages.x86_64-linux.default 				# dunno what to do
 
     # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
 
@@ -25,10 +28,28 @@
     (pkgs.writeShellScriptBin "heroic-dgpu" ''
       nvidia-offload heroic
     '')
+    (pkgs.writeShellScriptBin "obs-dgpu" ''
+      nvidia-offload obs
+    '')
     (pkgs.writeShellScriptBin "pavufix" ''
       GSK_RENDERER=ngl pavucontrol
     '')
   ];
+
+  programs.ags = {
+    enable = true;
+
+    # null or path, leave as null if you don't want hm to manage the config
+    configDir = null;
+
+    # additional packages to add to gjs's runtime
+    extraPackages = with pkgs; [
+      gtksourceview
+      webkitgtk
+      accountsservice
+      inputs.astal.packages.${pkgs.system}.battery
+    ];
+  };
 
   home.file = {
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in

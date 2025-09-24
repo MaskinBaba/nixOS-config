@@ -88,11 +88,22 @@
     bottles
     scrcpy
     rpi-imager
-    kicad
+    # kicad
     vlc
     pywal
     vivaldi
     gammastep
+    usbutils
+    wpgtk
+    xsettingsd
+    shadps4
+    nextcloud-client
+    ollama
+    kdePackages.kwallet-pam
+    feishin
+    rquickshare
+    clipse
+    glib
   ]) 
   
   ++ 

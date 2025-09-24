@@ -1,4 +1,4 @@
-{ config, nixpkgs, pkgs, lib, inputs, timezone, ... }:
+{ config, nixpkgs, nixpkgs-unstable, pkgs, pkgs-unstable, lib, inputs, timezone, ... }:
 
 {
   imports =
@@ -13,17 +13,27 @@
       inputs.home-manager.nixosModules.default
     ];
 
+  users.groups.libvirtd.members = ["maskin"];
+
   main-user = {
     enable = true;
     userName = "maskin";
     description = "Maskin";
-    extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" "dialout" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" "dialout" "input" ];
   };
   # virtualisation.docker.enable = true;
 
-  virtualisation.docker.rootless = {
-    enable = true;
-    setSocketVariable = true;
+  virtualisation = {
+    docker.rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+
+    libvirtd = {
+      enable = true;
+      qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
+    };
+    spiceUSBRedirection.enable = true;
   };
  
   fonts = {
@@ -31,9 +41,9 @@
     fontconfig.useEmbeddedBitmaps = true;
     packages = with pkgs; [
       # nerd-fonts.iosevka
-      nerdfonts
+      # nerdfonts
       font-awesome
       google-fonts
-    ];
+    ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts) ;
   };
 }
