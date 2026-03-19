@@ -48,9 +48,9 @@
       mpd.serviceConfig.SupplementaryGroups = [ "pipewire" ];
     };
 
-    extraConfig = ''
-      DefaultTimeoutStopSec=10s
-    '';
+    settings.Manager = {
+      DefaultTimeoutStopSec = "10s";
+    };
   };
 
   security = {
@@ -113,14 +113,16 @@
   # Allow unfree packages
   nixpkgs.config = {
     allowUnfree = true;
-    # permittedInsecurePackages = [
-    #   "electron-33.4.11"
-    # ];
+    permittedInsecurePackages = [
+      "electron-33.4.11"
+      "qtwebengine-5.15.19"
+    ];
   };
 
-  nixpkgs.config.permittedInsecurePackages = [
-                "electron-33.4.11"
-              ];
+  # nixpkgs.config.permittedInsecurePackages = [
+  #   "electron-33.4.11"
+  #   "qtwebengine-5.15.19"
+  # ];
 
   
 
@@ -179,27 +181,27 @@
     # '';
     logind.powerKey = "ignore";
 
-    mopidy = let
-      mopidyPackagesOverride = pkgs.mopidyPackages.overrideScope (prev: final: {
-        extraPkgs = pkgs: [ pkgs.yt-dlp ];
-      });
-    in {
-      enable = true;
-      extensionPackages = (with pkgs; [
-        mopidy-youtube
-	mopidy-ytmusic
-	mopidy-mpd
-	mopidy-moped
-	mopidy-mopify
-	mopidy-notify
-	mopidy-spotify
-	mopidy-subidy
-      ]);
-      configuration = ''
-        [youtube]
-	youtube_dl_package = yt_dlp
-      '';
-    };
+    # mopidy = let
+    #   mopidyPackagesOverride = pkgs.mopidyPackages.overrideScope (prev: final: {
+    #     extraPkgs = pkgs: [ pkgs.yt-dlp ];
+    #   });
+    # in {
+    #   enable = true;
+    #   extensionPackages = (with pkgs; [
+    #     mopidy-youtube
+	  #     mopidy-ytmusic
+	  #     mopidy-mpd
+	  #     mopidy-moped
+	  #     mopidy-mopify
+	  #     mopidy-notify
+	  #     mopidy-spotify
+	  #     mopidy-subidy
+    #   ]);
+    #   configuration = ''
+    #     [youtube]
+	  #     youtube_dl_package = yt_dlp
+    #   '';
+    # };
 
     gnome.gnome-keyring.enable = true;
 #     logind.lidSwitch = "ignore";

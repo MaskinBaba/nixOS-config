@@ -3,13 +3,13 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./modules/hardware-configuration.nix
-      ./config/sysNnix.nix
-      ./config/programs.nix
-      ./config/network.nix
-      ./modules/packages.nix
-      ./modules/user.nix
-      ./config/timenlocal.nix
+      ./hardware-configuration.nix
+      ./../../config/sysNnix.nix
+      ./../../config/programs.nix
+      ./../../config/network.nix
+      ./../../modules/packages.nix
+      ./../../modules/user.nix
+      ./../../config/timenlocal.nix
       inputs.home-manager.nixosModules.default
     ];
 

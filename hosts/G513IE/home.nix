@@ -3,7 +3,7 @@
 {
   imports = [
     inputs.ags.homeManagerModules.default
-    ./home-manager/zsh.nix
+    ./../../home-manager/zsh.nix
     # ./home-manager/ags.nix
   ];
 

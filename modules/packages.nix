@@ -1,4 +1,7 @@
 { config, pkgs, pkgs-unstable, lib, inputs, ... }:
+# let
+#   nixos2505 = fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-25.05.tar.gz";
+# in
 {
   environment.systemPackages = (with pkgs; [
     vim 
@@ -10,7 +13,7 @@
     pciutils
     discord
     lshw
-    onlyoffice-bin
+    onlyoffice-desktopeditors
     nvtopPackages.full
     htop
     neofetch
@@ -28,7 +31,7 @@
     waybar
     dunst
     libnotify
-    rofi-wayland
+    rofi
     wofi
     pulseaudio
     pcmanfm
@@ -69,13 +72,13 @@
     # davinci-resolve
     krita
     inkscape
-    libsForQt5.kdenlive
+    kdePackages.kdenlive
     ncmpcpp
-    mpc-cli
+    mpc
     mpd
     ags
     jdk
-    python3Full
+    python315
     fuzzel
     nwg-look
     eza
@@ -84,7 +87,7 @@
     keepassxc
     # networkmanager
     libsixel
-    ryujinx
+    ryubing
     bottles
     scrcpy
     rpi-imager
@@ -104,6 +107,17 @@
     rquickshare
     clipse
     glib
+    freerdp
+    libsForQt5.qt5ct
+    kdePackages.qt6ct
+    tokyonight-gtk-theme
+    lxqt.pcmanfm-qt
+    hyprshade
+    swaynotificationcenter
+    # nixos2505.jellyfin-media-player
+    jellyfin-media-player
+    # quickshell
+    # qt6.qtwayland
   ]) 
   
   ++ 

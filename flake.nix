@@ -1,7 +1,7 @@
 {
   description = "Flake for NixOS build.";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs: 
+  outputs = { self, nixpkgs, nixpkgs-unstable, winapps, home-manager, ... }@inputs: 
   let
     lib = nixpkgs.lib;
     # pkgs = nixpkgs.legacyPackages.${system};
@@ -59,12 +59,27 @@
         inherit pkgs-unstable;
         inherit timezone;
         inherit locale;
+	inherit system;
       };
 
       modules = [ 
-        ./configuration.nix
+        ./hosts/G513IE/configuration.nix
         inputs.home-manager.nixosModules.default
         # inputs.nixpkgs-unstable.nixosModules.default
+
+	(
+          {
+            pkgs-unstable,
+            system ? pkgs-unstable.system,
+            ...
+          }:
+          {
+            environment.systemPackages = [
+              winapps.packages."${system}".winapps
+              winapps.packages."${system}".winapps-launcher # optional
+            ];
+          }
+        )
       ];
     };
 
@@ -75,14 +90,14 @@
         extraSpecialArgs = { inherit inputs; };
 
         modules = [
-          ./home.nix
+          ./hosts/G513IE/home.nix
         ];
       };
     };
   };
   
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
@@ -94,6 +109,13 @@
       # url = "github:hyprwm/Hyprland?submodules=1";
       url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    Hyprspace = {
+      url = "github:KZDKM/Hyprspace";
+
+      # Hyprspace uses latest Hyprland. We declare this to keep them in sync.
+      inputs.hyprland.follows = "hyprland";
     };
 
     ags = {
@@ -113,6 +135,11 @@
 
     nix-matlab = {
       url = "gitlab:doronbehar/nix-matlab";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    winapps = {
+      url = "github:winapps-org/winapps";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };

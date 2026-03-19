@@ -44,6 +44,7 @@
           ssh $@
         fi
       }
+      export LIBVIRT_DEFAULT_URI="qemu:///system"
     '';
   };
 }
