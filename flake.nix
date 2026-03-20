@@ -94,6 +94,23 @@
         ];
       };
     };
+
+    nixosConfigurations."marineford" = lib.nixosSystem {
+      inherit system;
+      specialArgs = { 
+        inherit inputs;
+        inherit pkgs;
+        inherit timezone;
+        inherit locale;
+	inherit system;
+      };
+
+      modules = [ 
+        ./hosts/marineford/configuration.nix
+        inputs.home-manager.nixosModules.default
+        # inputs.nixpkgs-unstable.nixosModules.default
+      ];
+    };
   };
   
   inputs = {
