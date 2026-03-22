@@ -50,6 +50,9 @@
   services.xserver.xkb.layout = "us";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
+  # Lid
+  services.upower.ignoreLid = true;
+
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
@@ -64,14 +67,27 @@
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
 
+  # nginx
+  services.nginx = {
+    enable = true;
+    virtualHosts.localhost = {
+      locations."/" = {
+        return = "200 '<html><body>Its working</body></html>'";
+        extraConfig = ''
+          default_type text/html;
+        '';
+      };
+    };
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.users.alice = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  #   packages = with pkgs; [
-  #     tree
-  #   ];
-  # };
+  users.users.maskin = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" "dialout" "video" "plugdev" ];
+    packages = with pkgs; [
+      tree
+    ];
+  };
 
   programs.firefox.enable = true;
 

@@ -1,8 +1,9 @@
 {
   description = "Flake for NixOS build.";
-
+  
   outputs = { self, nixpkgs, nixpkgs-unstable, winapps, home-manager, ... }@inputs: 
   let
+    system = "x86_64-linux";
     lib = nixpkgs.lib;
     # pkgs = nixpkgs.legacyPackages.${system};
     pkgs = import nixpkgs{
@@ -29,7 +30,6 @@
     # pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
     
     # System Settings
-    system = "x86_64-linux";
     ROG = "G513IE";
     bigblue = "bigblue";
     server = "hades";
@@ -51,38 +51,6 @@
     };
   in
   {
-    nixosConfigurations."G513IE" = lib.nixosSystem {
-      inherit system;
-      specialArgs = { 
-        inherit inputs;
-        inherit pkgs;
-        inherit pkgs-unstable;
-        inherit timezone;
-        inherit locale;
-	inherit system;
-      };
-
-      modules = [ 
-        ./hosts/G513IE/configuration.nix
-        inputs.home-manager.nixosModules.default
-        # inputs.nixpkgs-unstable.nixosModules.default
-
-	(
-          {
-            pkgs-unstable,
-            system ? pkgs-unstable.system,
-            ...
-          }:
-          {
-            environment.systemPackages = [
-              winapps.packages."${system}".winapps
-              winapps.packages."${system}".winapps-launcher # optional
-            ];
-          }
-        )
-      ];
-    };
-
     homeConfigurations = {
       maskin = home-manager.lib.homeManagerConfiguration{
         pkgs = pkgs-unstable;
@@ -95,24 +63,59 @@
       };
     };
 
-    nixosConfigurations."marineford" = lib.nixosSystem {
-      inherit system;
-      specialArgs = { 
-        inherit inputs;
-        inherit pkgs;
-        inherit timezone;
-        inherit locale;
-	inherit system;
+    nixosConfigurations = {
+      G513IE = lib.nixosSystem {
+        inherit system;
+        specialArgs = { 
+          inherit inputs;
+          inherit pkgs;
+          inherit pkgs-unstable;
+          inherit timezone;
+          inherit locale;
+  	  inherit system;
+        };
+  
+        modules = [ 
+          ./hosts/G513IE/configuration.nix
+          inputs.home-manager.nixosModules.default
+          # inputs.nixpkgs-unstable.nixosModules.default
+  
+  	  (
+            {
+              pkgs-unstable,
+              system ? pkgs-unstable.system,
+              ...
+            }:
+            {
+              environment.systemPackages = [
+                winapps.packages."${system}".winapps
+                winapps.packages."${system}".winapps-launcher # optional
+              ];
+            }
+          )
+        ];
       };
 
-      modules = [ 
-        ./hosts/marineford/configuration.nix
-        inputs.home-manager.nixosModules.default
-        # inputs.nixpkgs-unstable.nixosModules.default
-      ];
+      marineford = lib.nixosSystem {
+        inherit system;
+        specialArgs = { 
+          inherit inputs;
+          inherit pkgs;
+          inherit timezone;
+          inherit locale;
+  	  inherit system;
+        };
+  
+        modules = [ 
+          ./hosts/marineford/configuration.nix
+          # inputs.home-manager.nixosModules.default
+          # inputs.nixpkgs-unstable.nixosModules.default
+        ];
+      };
     };
   };
-  
+
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";

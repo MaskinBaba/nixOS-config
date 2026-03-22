@@ -10,7 +10,6 @@
       ./../../modules/packages.nix
       ./../../modules/user.nix
       ./../../config/timenlocal.nix
-      inputs.home-manager.nixosModules.default
     ];
 
   users.groups.libvirtd.members = ["maskin"];
