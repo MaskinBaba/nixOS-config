@@ -1,16 +1,15 @@
 {
   description = "Flake for NixOS build.";
   
-  outputs = { self, nixpkgs, nixpkgs-unstable, winapps, home-manager, ... }@inputs: 
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, sops-nix, ... }@inputs: 
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
-    # pkgs = nixpkgs.legacyPackages.${system};
     pkgs = import nixpkgs{
       inherit system;
       config = {
         allowUnfree = true;
-	permittedInsecurePackages = [
+	      permittedInsecurePackages = [
           "electron-33.4.11"
         ];
       };
@@ -19,16 +18,12 @@
       inherit system;
       config = {
         allowUnfree = true;
-	permittedInsecurePackages = [
+	      permittedInsecurePackages = [
           "electron-33.4.11"
         ];
       };
-      overlays = [
-        inputs.nix-matlab.overlay
-      ];
     };
-    # pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
-    
+
     # System Settings
     ROG = "G513IE";
     bigblue = "bigblue";
@@ -66,33 +61,20 @@
     nixosConfigurations = {
       G513IE = lib.nixosSystem {
         inherit system;
+        # system = "x86_64-linux";
         specialArgs = { 
+          # inherit system;
           inherit inputs;
-          inherit pkgs;
-          inherit pkgs-unstable;
           inherit timezone;
           inherit locale;
-  	  inherit system;
+          inherit pkgs;
+          inherit pkgs-unstable;
         };
   
         modules = [ 
           ./hosts/G513IE/configuration.nix
           inputs.home-manager.nixosModules.default
-          # inputs.nixpkgs-unstable.nixosModules.default
-  
-  	  (
-            {
-              pkgs-unstable,
-              system ? pkgs-unstable.system,
-              ...
-            }:
-            {
-              environment.systemPackages = [
-                winapps.packages."${system}".winapps
-                winapps.packages."${system}".winapps-launcher # optional
-              ];
-            }
-          )
+          sops-nix.nixosModules.sops
         ];
       };
 
@@ -108,8 +90,7 @@
   
         modules = [ 
           ./hosts/marineford/configuration.nix
-          # inputs.home-manager.nixosModules.default
-          # inputs.nixpkgs-unstable.nixosModules.default
+          sops-nix.nixosModules.sops
         ];
       };
     };
@@ -148,19 +129,14 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    helix = {
-      url = "github:helix-editor/helix/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-matlab = {
       url = "gitlab:doronbehar/nix-matlab";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    winapps = {
-      url = "github:winapps-org/winapps";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 }

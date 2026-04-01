@@ -10,6 +10,7 @@
       ./../../modules/packages.nix
       ./../../modules/user.nix
       ./../../config/timenlocal.nix
+      ./sops.nix
     ];
 
   users.groups.libvirtd.members = ["maskin"];
@@ -20,6 +21,9 @@
     description = "Maskin";
     extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" "dialout" "input" "kvm" "libvirtd" "docker" "plugdev" ];
   };
+
+
+
   # virtualisation.docker.enable = true;
 
   virtualisation = {

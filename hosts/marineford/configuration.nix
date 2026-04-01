@@ -1,25 +1,17 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 { config, lib, pkgs, inputs, ... }:
-
 {
   imports =
     [ # Include the results of the hardware scan.
+      ./sops.nix
       ./hardware-configuration.nix
     ];
 
-  # Use the GRUB 2 boot loader.
   boot.loader.grub = {
     enable = true;
-  # Define on which hard drive you want to install Grub.
-    device = "/dev/sda"; # or "nodev" for efi only
+    device = "/dev/sda"; 
   };
 
-  networking.hostName = "marineford"; # Define your hostname.
-
-  # Configure network connections interactively with nmcli or nmtui.
+  networking.hostName = "marineford"; 
   networking.networkmanager.enable = true;
 
   # Set your time zone.
@@ -38,13 +30,19 @@
   # };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services.xserver.enable = false;
 
 
   # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
+  services.displayManager = {
+    # enable = true;
+    gdm = {
+      enable = false;
+      autoSuspend = false;
+    };
+    sddm.enable = false;
+  };
   services.desktopManager.gnome.enable = true;
-  
 
   # Configure keymap in X11
   services.xserver.xkb.layout = "us";
@@ -54,11 +52,8 @@
   services.upower.ignoreLid = true;
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  services.printing.enable = true;
 
-  # Enable sound.
-  # services.pulseaudio.enable = true;
-  # OR
   services.pipewire = {
     enable = true;
     pulse.enable = true;
@@ -71,13 +66,60 @@
   services.nginx = {
     enable = true;
     virtualHosts.localhost = {
-      locations."/" = {
-        return = "200 '<html><body>Its working</body></html>'";
-        extraConfig = ''
-          default_type text/html;
-        '';
+      # locations."/" = {
+      #   return = "200 '<html><body>Its working</body></html>'";
+      #   extraConfig = ''
+      #     default_type text/html;
+      #   '';
+      # };
+      # listen = [ { addr = "127.0.0.1"; port = 8080; } ];
+    };
+  };
+
+  environment.etc."nextcloud-admin-pass".text = "hebbememeow";
+  services.nextcloud = {
+    enable = true;
+    package = pkgs.nextcloud32;
+    hostName = "localhost";
+    config = {
+      adminpassFile = "/etc/nextcloud-admin-pass";
+      dbtype = "sqlite";
+    };
+    settings = {
+      trusted_domains = [
+        "192.168.1.14"
+        "127.0.0.1"
+        "maskinscache.xyz"
+        "nc.maskinscache.xyz"
+        "ignat.ns.cloudflare.com"
+        "rihana.ns.cloudflare.com"
+      ];
+    };
+  };
+
+  services.cloudflared = {
+    enable = true;
+    # package = "pkgs.cloudflared";
+    tunnels = {
+      "1cbc7afb-97ee-487a-80c0-1e74f6960f3d" = {
+        credentialsFile = "/var/lib/cloudflared/1cbc7afb-97ee-487a-80c0-1e74f6960f3d.json";
+        ingress = {
+          "nc.maskinscache.xyz" = "http://localhost:80";
+          # "nc.maskinscache.xyz" = {
+          #   service = "http://localhost:80";
+          #   # path = "/*.(jpg|png|css|js)";
+          # };
+          # "www.nc.maskinscache.xyz" = "http://localhost:80";
+        };
+        default = "http_status:404";
       };
     };
+  };
+
+  services.jellyfin = {
+    enable = true;
+    openFirewall = true;
+    user = "maskin";
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -89,19 +131,28 @@
     ];
   };
 
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    # autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+
+    shellAliases = {
+      ll = "ls -l";
+      update = "sudo nixos-rebuild switch --flake .#marineford";
+    };
+    # history.size = 10000;
+  };
+
   programs.firefox.enable = true;
 
-  # List packages installed in system profile.
-  # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
     vim 
     wget
     git
+    cloudflared
   ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
@@ -110,13 +161,19 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings.Macs = [
+      "hmac-sha2-512-etm@openssh.com"
+      "hmac-sha2-256-etm@openssh.com"
+      "umac-128-etm@openssh.com"
+      "hmac-sha2-256"
+    ];
+  };
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 80 8080 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   nix = {
     settings = {
@@ -136,28 +193,6 @@
     allowUnfree = true;
   };
 
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "23.11"; # Did you read the comment?
 
 }

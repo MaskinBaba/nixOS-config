@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, lib, inputs, ... }:
+{ nixpkgs, config, pkgs, pkgs-unstable, lib, inputs, ... }:
 {
   # Bootloader.
   boot = {
@@ -111,13 +111,14 @@
   };
 
   # Allow unfree packages
-  nixpkgs.config = {
-    allowUnfree = true;
-    permittedInsecurePackages = [
-      "electron-33.4.11"
-      "qtwebengine-5.15.19"
-    ];
-  };
+  # nixpkgs.config = {
+  #   allowUnfree = true;
+  #   permittedInsecurePackages = [
+  #     "electron-33.4.11"
+  #     "qtwebengine-5.15.19"
+  #   ];
+  # };
+
 
   # nixpkgs.config.permittedInsecurePackages = [
   #   "electron-33.4.11"

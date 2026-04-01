@@ -118,6 +118,8 @@
     jellyfin-media-player
     # quickshell
     # qt6.qtwayland
+    sops
+    age
   ]) 
   
   ++ 
