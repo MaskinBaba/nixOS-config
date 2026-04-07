@@ -3,6 +3,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./sops.nix
+      # ./../../modules/server/home-assistant.nix
+      ./../../modules/server/immich.nix
       ./hardware-configuration.nix
     ];
 
@@ -47,6 +49,18 @@
   # Configure keymap in X11
   services.xserver.xkb.layout = "us";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
+
+  services.xrdp.enable = true;
+  
+  # Use the GNOME Wayland session
+  services.xrdp.defaultWindowManager = "${pkgs.gnome-session}/bin/gnome-session";
+  
+  # XRDP needs the GNOME remote desktop backend to function
+  services.gnome.gnome-remote-desktop.enable = true;
+  
+  # Open the default RDP port (3389)
+  services.xrdp.openFirewall = true;
+
 
   # Lid
   services.upower.ignoreLid = true;
@@ -148,9 +162,13 @@
 
   environment.systemPackages = with pkgs; [
     vim 
+    tmux
     wget
     git
     cloudflared
+    htop
+    neofetch
+    neovim
   ];
 
   programs.gnupg.agent = {
@@ -172,7 +190,11 @@
   };
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 80 8080 ];
+  networking.firewall.allowedTCPPorts = [ 
+    80 
+    8080
+    # config.services.home-assistant.config.http.server_port
+   ];
   # networking.firewall.allowedUDPPorts = [ ... ];
 
   nix = {
