@@ -5,22 +5,25 @@
     loader = {
       systemd-boot ={ 
         enable = true;
-	extraEntries = {
+	      extraEntries = {
           "archLinux.conf" = ''
-	    title Arch Linux
-	    efi /efi/EFI/grub_efi/grubx64.efi
-	    sort_key q_arch
-	  '';
-	};
+	          title Arch Linux
+	          efi /efi/EFI/grub_efi/grubx64.efi
+	          sort_key q_arch
+	        '';
+	      };
       };
       efi.canTouchEfiVariables = true;
     };
-    kernelParams = [ "loglevel=3" "tsc=unstable" "trace_clock=local" ];
+    kernelParams = [ "profile" "tsc=unstable" "trace_clock=local" ];
+    # kernelPackages = pkgs.linuxPackages_latest;
     blacklistedKernelModules = [ "i8042" ];
     #extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
     #kernelModules = [ "wl" ];
     #initrd.kernelModules = [ "wl" ];
     supportedFilesystems = [ "ntfs" ];
+    # resumeDevice = "/dev/disk/by-partuuid/63de9b1b-d3db-444e-bc1e-46b4f34d920a";
+    resumeDevice = "/dev/nvme1n1p7";
   };
 
 #  networking = {
@@ -104,8 +107,9 @@
     };
     gc = {
       automatic = true;
-      options = "--delete-older-than 15d";
-      randomizedDelaySec = "20min";
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+      # randomizedDelaySec = "20min";
     };
     nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   };
@@ -176,6 +180,8 @@
 
   services = {
 
+    ntp.enable = true;
+
     pulseaudio.enable = false;
     # logind.extraConfig = ''
     #   HandlePowerKey=ignore
@@ -213,6 +219,9 @@
 #    '';
     udev.extraRules = ''
       KERNEL=="hidraw*", ATTRS{idVendor}=="3554", MODE="0666"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="3748", MODE="0666"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="374b", MODE="0666"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="0483", ATTR{idProduct}=="374d", MODE="0666"
     '';
     # udev.extraRules = ''
     #   SUBSYSTEMS=="usb", ATTRS{idVendor}=="3554", MODE=="0660", TAG+="uaccess"

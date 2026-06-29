@@ -1,10 +1,15 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, pkgs-unstable, inputs, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
       ./sops.nix
       # ./../../modules/server/home-assistant.nix
       ./../../modules/server/immich.nix
+      ./../../modules/server/dashboard.nix
+      ./../../modules/server/onlyoffice.nix
+      ./../../modules/server/vault.nix
+      ./../../modules/server/servarr.nix
+      ./../../modules/server/torrent.nix
       ./hardware-configuration.nix
     ];
 
@@ -15,6 +20,8 @@
 
   networking.hostName = "marineford"; 
   networking.networkmanager.enable = true;
+  networking.nameservers = [ "1.1.1.1" "1.0.0.1" ];
+
 
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
@@ -90,7 +97,8 @@
     };
   };
 
-  environment.etc."nextcloud-admin-pass".text = "hebbememeow";
+  # environment.etc."nextcloud-admin-pass".text = "This_is_a_text";
+  environment.etc."nextcloud-admin-pass".source = config.sops.secrets."server/nextcloud_admin".path;
   services.nextcloud = {
     enable = true;
     package = pkgs.nextcloud32;
@@ -111,12 +119,19 @@
     };
   };
 
+  services.filebrowser = {
+    enable = true;
+    user = "maskin";
+    settings.port = 8070;
+  };
+
   services.cloudflared = {
     enable = true;
     # package = "pkgs.cloudflared";
     tunnels = {
       "1cbc7afb-97ee-487a-80c0-1e74f6960f3d" = {
-        credentialsFile = "/var/lib/cloudflared/1cbc7afb-97ee-487a-80c0-1e74f6960f3d.json";
+        # credentialsFile = "/var/lib/cloudflared/1cbc7afb-97ee-487a-80c0-1e74f6960f3d.json";
+        credentialsFile = config.sops.secrets."server/marineford_cf_tunnel_keys".path;
         ingress = {
           "nc.maskinscache.xyz" = "http://localhost:80";
           # "nc.maskinscache.xyz" = {
@@ -140,6 +155,7 @@
   users.users.maskin = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "dialout" "video" "plugdev" ];
+    shell = pkgs.zsh;
     packages = with pkgs; [
       tree
     ];
@@ -160,7 +176,7 @@
 
   programs.firefox.enable = true;
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = (with pkgs; [
     vim 
     tmux
     wget
@@ -169,7 +185,15 @@
     htop
     neofetch
     neovim
-  ];
+    sops
+    eza
+  ])
+
+  ++
+
+  (with pkgs-unstable; [
+    home-manager
+  ]);
 
   programs.gnupg.agent = {
     enable = true;
@@ -181,12 +205,16 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
-    settings.Macs = [
-      "hmac-sha2-512-etm@openssh.com"
-      "hmac-sha2-256-etm@openssh.com"
-      "umac-128-etm@openssh.com"
-      "hmac-sha2-256"
-    ];
+    permitRootLogin = "yes";
+    settings = {
+      UseDns = false;
+      Macs = [
+        "hmac-sha2-512-etm@openssh.com"
+        "hmac-sha2-256-etm@openssh.com"
+        "umac-128-etm@openssh.com"
+        "hmac-sha2-256"
+      ];
+    };
   };
 
   # Open ports in the firewall.

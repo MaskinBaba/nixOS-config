@@ -22,7 +22,7 @@
     extraGroups = [ "networkmanager" "wheel" "video" "docker" "maskin" "dialout" "input" "kvm" "libvirtd" "docker" "plugdev" ];
   };
 
-
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # virtualisation.docker.enable = true;
 
@@ -49,4 +49,6 @@
       google-fonts
     ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts) ;
   };
+
+  nix.settings.trusted-users = [ "root" "@wheel" ];
 }

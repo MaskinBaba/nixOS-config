@@ -29,7 +29,7 @@
     gimp
     protontricks
     waybar
-    dunst
+    # dunst
     libnotify
     rofi
     wofi
@@ -120,6 +120,13 @@
     # qt6.qtwayland
     sops
     age
+    ffmpegthumbnailer
+    ffmpeg-headless
+    libtool
+    autoconf
+    automake
+    gnum4
+    inputs.sidra.packages."${pkgs.system}".default
   ]) 
   
   ++ 

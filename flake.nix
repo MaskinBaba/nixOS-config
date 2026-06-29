@@ -1,7 +1,7 @@
 {
   description = "Flake for NixOS build.";
   
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, sops-nix, ... }@inputs: 
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, nixos-raspberrypi, sops-nix, ... }@inputs: 
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
@@ -83,13 +83,62 @@
         specialArgs = { 
           inherit inputs;
           inherit pkgs;
+          inherit pkgs-unstable;
           inherit timezone;
           inherit locale;
-  	  inherit system;
+  	      inherit system;
         };
   
         modules = [ 
           ./hosts/marineford/configuration.nix
+          sops-nix.nixosModules.sops
+        ];
+      };
+
+      marinefordv2 = nixos-raspberrypi.lib.nixosSystemFull {
+        specialArgs = {
+          inherit inputs;
+          inherit nixos-raspberrypi;
+        };
+
+        modules = [
+          ./hosts/marinefordv2/configuration.nix
+          nixos-raspberrypi.nixosModules.trusted-nix-caches
+
+          ({ ... }: {
+            nixpkgs.overlays = [
+              (final: prev: {
+                sdl3 = prev.sdl3.overrideAttrs (old: {
+                  doCheck = false;
+                });
+              })
+            ];
+          })
+
+          ({
+            # Hardware specific configuration, see section below for a more complete
+            # list of modules
+            imports = with nixos-raspberrypi.nixosModules; [
+              raspberry-pi-5.base
+              raspberry-pi-5.display-vc4
+              raspberry-pi-5.page-size-16k
+              raspberry-pi-5.bluetooth
+            ];
+          })
+      
+          ({ config, pkgs, lib, ... }: {
+      
+            system.nixos.tags = let
+              cfg = config.boot.loader.raspberry-pi;
+            in [
+              "raspberry-pi-${cfg.variant}"
+              cfg.bootloader
+              config.boot.kernelPackages.kernel.version
+            ];
+          })
+      
+          ./hosts/marinefordv2/config.txt.nix
+          inputs.home-manager.nixosModules.default
           sops-nix.nixosModules.sops
         ];
       };
@@ -105,7 +154,19 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
     
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixos-raspberrypi/nixpkgs";
+    };
+
+    nixos-anywhere = {
+      url = "github:nix-community/nixos-anywhere";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     hyprland = {
       # url = "github:hyprwm/Hyprland?submodules=1";
       url = "github:hyprwm/Hyprland";
@@ -129,6 +190,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    sidra = {
+      url = "github:wimpysworld/sidra";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-matlab = {
       url = "gitlab:doronbehar/nix-matlab";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -138,5 +204,15 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+  };
+
+   nixConfig = {
+    extra-substituters = [
+      "https://nixos-raspberrypi.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
+    ];
+    connect-timeout = 5;
   };
 }

@@ -17,6 +17,12 @@
     { device = "/dev/disk/by-uuid/40536872-6e84-49ec-aa1c-b3071751c3ee";
       fsType = "ext4";
     };
+  
+  fileSystems."/WD_Passport" =
+    { device = "/dev/disk/by-uuid/6777-B5C9";
+      fsType = "exfat";
+      options = [ "rw" "umask=000" "nofail" "x-systemd.automount" ];
+    };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/8bb55e7f-e920-4849-876c-b64b25f649a1"; }

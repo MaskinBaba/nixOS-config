@@ -47,8 +47,10 @@
   #   };
 
   swapDevices = [ {
-    device = "/dev/disk/by-partuuid/63de9b1b-d3db-444e-bc1e-46b4f34d920a" ;
-    randomEncryption.enable = true;
+    device = "/dev/disk/by-partuuid/63de9b1b-d3db-444e-bc1e-46b4f34d920a";
+    options = [ "defaults" "discard" ];
+    priority = 1;
+    randomEncryption.enable = false;
   } ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
